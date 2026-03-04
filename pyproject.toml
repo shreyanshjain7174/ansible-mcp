@@ -7,12 +7,12 @@ name = "ansible-mcp"
 version = "0.1.0"
 description = "Standalone, vendor-agnostic MCP server for Ansible tooling"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [{ name = "ansible-mcp maintainers" }]
 license = { text = "MIT" }
 dependencies = [
   "mcp[cli]>=1.2.0",
-  "ansible-core>=2.16.0",
+  "ansible-core>=2.20.0",
 ]
 
 [project.optional-dependencies]
