@@ -6,6 +6,7 @@ from ansible_mcp.plugins import (
     AnsibleMCPPlugin,
     ToolResult,
     ToolSpec,
+    build_workspace_exec_env,
     exec_command,
     require_non_empty,
     resolve_workspace_path,
@@ -49,6 +50,8 @@ class InventoryPlugin(AnsibleMCPPlugin):
         ]
 
     async def handle_tool_call(self, name: str, args: dict[str, Any]) -> ToolResult:
+        run_env = build_workspace_exec_env(self.workspace.root)
+
         try:
             inventory_path = require_non_empty(args.get("inventory_path"), "inventory_path")
             resolved_inventory_path = resolve_workspace_path(self.workspace.root, inventory_path)
@@ -59,12 +62,12 @@ class InventoryPlugin(AnsibleMCPPlugin):
 
         if name == "inventory_parse":
             command = ["ansible-inventory", "-i", inventory_path_str, "--list"]
-            result = await exec_command(command, cwd=self.workspace.root)
+            result = await exec_command(command, cwd=self.workspace.root, env=run_env)
             return ToolResult(status=result["status"], payload=result)
 
         if name == "inventory_graph":
             command = ["ansible-inventory", "-i", inventory_path_str, "--graph"]
-            result = await exec_command(command, cwd=self.workspace.root)
+            result = await exec_command(command, cwd=self.workspace.root, env=run_env)
             return ToolResult(status=result["status"], payload=result)
 
         return ToolResult(status="failed", payload={"error": f"Unsupported tool: {name}"})

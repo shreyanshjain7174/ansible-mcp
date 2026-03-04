@@ -60,6 +60,23 @@ def resolve_workspace_path(workspace_root: Path, candidate: str) -> Path:
     return resolved
 
 
+def build_workspace_exec_env(workspace_root: Path) -> dict[str, str]:
+    cache_home = workspace_root / ".cache"
+    ansible_home = workspace_root / ".ansible"
+    ansible_local_temp = ansible_home / "tmp"
+
+    cache_home.mkdir(parents=True, exist_ok=True)
+    ansible_local_temp.mkdir(parents=True, exist_ok=True)
+
+    return {
+        "HOME": str(workspace_root),
+        "XDG_CACHE_HOME": str(cache_home),
+        "ANSIBLE_HOME": str(ansible_home),
+        "ANSIBLE_LOCAL_TEMP": str(ansible_local_temp),
+        "TMPDIR": str(ansible_local_temp),
+    }
+
+
 _COMMON_VENV_NAMES = (
     "ansible-dev",
     ".venv",
