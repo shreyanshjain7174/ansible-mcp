@@ -1,0 +1,32 @@
+minimum_pre_commit_version: "3.5.0"
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check src tests
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: mypy-strict
+        name: mypy strict
+        entry: uv run mypy --strict src
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: unit-tests
+        name: unit tests
+        entry: uv run pytest -q tests/unit
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: integration-tests
+        name: integration tests
+        entry: uv run pytest -q tests/integration -m integration
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
