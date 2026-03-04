@@ -6,6 +6,7 @@ from ansible_mcp.plugins import (
     AnsibleMCPPlugin,
     ToolResult,
     ToolSpec,
+    build_workspace_exec_env,
     exec_command,
     require_non_empty,
     resolve_workspace_path,
@@ -72,11 +73,7 @@ class LintPlugin(AnsibleMCPPlugin):
         if isinstance(tags, list) and tags:
             command.extend(["--tags", ",".join(str(tag) for tag in tags)])
 
-        lint_env = {
-            "HOME": str(self.workspace.root),
-            "XDG_CACHE_HOME": str(self.workspace.root / ".cache"),
-            "ANSIBLE_HOME": str(self.workspace.root / ".ansible"),
-        }
+        lint_env = build_workspace_exec_env(self.workspace.root)
         result = await exec_command(command, cwd=self.workspace.root, env=lint_env)
         status = "success" if result["exit_code"] == 0 else "failed"
         return ToolResult(status=status, payload=result)

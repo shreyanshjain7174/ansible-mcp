@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ansible Execution Environment",
+  "description": "Schema for execution-environment.yml (v1/v3 compatible)",
+  "$defs": {
+    "v3": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 3
+        },
+        "images": {
+          "type": "object",
+          "properties": {
+            "base_image": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        },
+        "dependencies": {
+          "type": "object"
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "version"
+      ]
+    },
+    "v1": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        }
+      },
+      "required": [
+        "version"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/v3"
+    },
+    {
+      "$ref": "#/$defs/v1"
+    }
+  ]
+}
