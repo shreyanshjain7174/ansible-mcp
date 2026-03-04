@@ -25,6 +25,9 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      - name: Upgrade pip & install build tools
+        run: pip install --upgrade pip setuptools wheel
+
       - name: Install dependencies
         run: pip install -e ".[dev]"
 
@@ -52,6 +55,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
+      - name: Upgrade pip & install build tools
+        run: pip install --upgrade pip setuptools wheel
+
       - name: Install dependencies
         run: pip install -e ".[dev]"
 
@@ -72,6 +78,9 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+
+      - name: Upgrade pip & install build tools
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Install dependencies
         run: pip install -e ".[dev]"
