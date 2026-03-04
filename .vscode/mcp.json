@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "ansible-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "ansible-mcp", "serve", "--stdio"],
+      "env": {
+        "WORKSPACE_ROOT": "${workspaceFolder}"
+      }
+    }
+  }
+}
