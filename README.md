@@ -188,6 +188,9 @@ This repo includes `.github/workflows/publish.yml` for package publishing.
 
 1. In PyPI and TestPyPI, create the `ansible-mcp` project (or reserve the name).
 2. Configure Trusted Publishing for this GitHub repository and workflow.
+3. Create GitHub environments expected by the workflow:
+  - `testpypi`
+  - `pypi`
 
 ### Publish flow
 
