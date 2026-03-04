@@ -2,7 +2,23 @@
 
 Standalone MCP server for Ansible tooling (lint, playbook operations, inventory parsing) with plugin-based routing and token-aware responses.
 
-## Install
+## Install from package index (standalone)
+
+After first release to PyPI, install directly with:
+
+```bash
+uv tool install ansible-mcp
+# or
+pip install ansible-mcp
+```
+
+Run:
+
+```bash
+ansible-mcp serve --stdio
+```
+
+## Install from source (development)
 
 ```bash
 cd /Users/sunny/Ansible/ansible-mcp
@@ -15,6 +31,23 @@ pip install -e .[dev]
 
 ```bash
 ansible-mcp serve --stdio
+```
+
+## Requirements files
+
+This project uses `pyproject.toml` as the dependency source of truth.
+
+For teams/tools that expect pip-style requirement files, optional exports are included:
+
+- `requirements.txt` (runtime)
+- `requirements-dev.txt` (development)
+
+Install with pip if needed:
+
+```bash
+pip install -r requirements.txt
+# or
+pip install -r requirements-dev.txt
 ```
 
 ## VS Code MCP config (project)
@@ -147,6 +180,25 @@ uv run --extra dev pre-commit run --all-files
 uv run --extra dev pre-commit run --all-files --hook-stage pre-push
 ```
 
+## Publish to PyPI
+
+This repo includes `.github/workflows/publish.yml` for package publishing.
+
+### One-time setup
+
+1. In PyPI and TestPyPI, create the `ansible-mcp` project (or reserve the name).
+2. Configure Trusted Publishing for this GitHub repository and workflow.
+
+### Publish flow
+
+- Manual test publish: run **Publish Package** workflow with `repository=testpypi`.
+- Production publish: push a version tag (for example `v0.1.1`) to trigger PyPI publish.
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
 ## Notes
 
 - Tool descriptions are intentionally compact for token efficiency.
@@ -165,7 +217,7 @@ uv run --extra dev pre-commit run --all-files --hook-stage pre-push
 
 ## Developer guidelines
 
-- Use Python 3.11+ and `uv` for dependency and environment management.
+- Use Python 3.12+ and `uv` for dependency and environment management.
 - Keep tool descriptions compact and schema-first.
 - Return structured outputs; avoid unbounded free-text payloads.
 - Keep subprocess execution safe (`create_subprocess_exec`, no `shell=True`).
