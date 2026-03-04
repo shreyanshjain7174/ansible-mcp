@@ -94,3 +94,13 @@ jobs:
 
       - name: Run integration tests
         run: pytest tests/integration -v --tb=short -m integration
+
+      - name: Integration diagnostics (on failure)
+        if: failure()
+        run: |
+          python -V
+          pip --version
+          pip show ansible-lint ansible-core || true
+          which ansible-lint || true
+          ansible-lint --version || true
+          env | sort | grep -E '^(HOME|XDG_CACHE_HOME|ANSIBLE_HOME|PATH)=' || true
