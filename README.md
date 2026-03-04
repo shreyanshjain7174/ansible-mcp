@@ -62,6 +62,26 @@ Integration tests require `ansible-lint`, `ansible-playbook`, and
 `ansible-inventory`. Tests are skipped automatically when required executables
 are missing.
 
+## Pre-commit hooks
+
+Install the shared hooks once per clone:
+
+```bash
+uv run --extra dev pre-commit install --hook-type pre-commit --hook-type pre-push
+```
+
+What runs automatically:
+
+- `pre-commit`: `ruff`, `mypy`, and `tests/unit`
+- `pre-push`: `tests/integration -m integration`
+
+Run all hooks manually:
+
+```bash
+uv run --extra dev pre-commit run --all-files
+uv run --extra dev pre-commit run --all-files --hook-stage pre-push
+```
+
 ## Notes
 
 - Tool descriptions are intentionally compact for token efficiency.
