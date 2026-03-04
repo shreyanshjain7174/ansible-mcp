@@ -1,0 +1,4 @@
+# Optional pip-compatible runtime requirements.
+# Source of truth remains pyproject.toml.
+mcp[cli]>=1.2.0
+ansible-core>=2.20.0
