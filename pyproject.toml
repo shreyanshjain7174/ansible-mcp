@@ -44,6 +44,9 @@ where = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
 asyncio_mode = "auto"
+markers = [
+  "integration: tests that call real ansible executables",
+]
 
 [tool.mypy]
 python_version = "3.11"

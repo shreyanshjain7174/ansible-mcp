@@ -1,0 +1,17 @@
+---
+- name: Sample playbook for testing
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Print hello
+      ansible.builtin.debug:
+        msg: "Hello from ansible-mcp E2E test"
+
+    - name: Set a fact
+      ansible.builtin.set_fact:
+        test_var: "working"
+
+    - name: Print the fact
+      ansible.builtin.debug:
+        msg: "Test variable is {{ test_var }}"

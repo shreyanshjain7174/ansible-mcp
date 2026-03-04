@@ -1,0 +1,11 @@
+---
+- name: Bad playbook with lint issues
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: using command instead of module
+      command: echo "This should trigger lint warnings"
+
+    - name: shell usage
+      shell: cat /etc/hostname

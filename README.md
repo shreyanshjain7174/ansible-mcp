@@ -44,6 +44,24 @@ Create `.vscode/mcp.json`:
 - `inventory_parse` — run `ansible-inventory --list`
 - `inventory_graph` — run `ansible-inventory --graph`
 
+## Tests
+
+- Fast unit lane:
+
+  ```bash
+  pytest tests/unit -v --tb=short
+  ```
+
+- Integration lane (real Ansible executables):
+
+  ```bash
+  pytest tests/integration -v --tb=short -m integration
+  ```
+
+Integration tests require `ansible-lint`, `ansible-playbook`, and
+`ansible-inventory`. Tests are skipped automatically when required executables
+are missing.
+
 ## Notes
 
 - Tool descriptions are intentionally compact for token efficiency.

@@ -1,0 +1,7 @@
+---
+- name: Broken playbook for syntax checking
+  hosts: localhost
+  tasks:
+    - name: Missing module
+      this_module_does_not_exist:
+        param: value
