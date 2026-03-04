@@ -47,6 +47,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.repository == 'testpypi'
     needs: build
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.repository }}
     permissions:
       id-token: write
     steps:
@@ -66,6 +67,7 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.repository == 'pypi')
     needs: build
     runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repository || 'pypi' }}
     permissions:
       id-token: write
     steps:
