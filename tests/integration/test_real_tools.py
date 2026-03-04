@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import shutil
-import sys
 from pathlib import Path
 
 import pytest
@@ -85,25 +84,11 @@ async def test_lint_plugin_real_calls(
     fixture_workspace: Path,
     token_budget: TokenBudget,
 ) -> None:
-    # Debug logging
-    print(f"\n[DEBUG] fixture_workspace: {fixture_workspace}", file=sys.stderr)
-    print(f"[DEBUG] fixture_workspace exists: {fixture_workspace.exists()}", file=sys.stderr)
-    sample_playbook_path = fixture_workspace / "tests" / "fixtures" / "sample_playbook.yml"
-    print(f"[DEBUG] sample_playbook_path: {sample_playbook_path}", file=sys.stderr)
-    print(f"[DEBUG] sample_playbook exists: {sample_playbook_path.exists()}", file=sys.stderr)
-    
     plugin = LintPlugin(detect_workspace(fixture_workspace), token_budget)
 
     good = await plugin.handle_tool_call(
         "lint", {"path": _fixture_path("sample_playbook")}
     )
-    print(f"[DEBUG] Lint result - status: {good.status}", file=sys.stderr)
-    print(f"[DEBUG] Lint result - exit_code: {good.payload.get('exit_code')}", file=sys.stderr)
-    if good.payload.get('stderr'):
-        print(f"[DEBUG] Lint stderr: {good.payload.get('stderr')}", file=sys.stderr)
-    if good.payload.get('stdout'):
-        print(f"[DEBUG] Lint stdout: {good.payload.get('stdout')}", file=sys.stderr)
-    
     _assert_status(good.status, "success", "lint good playbook")
 
     bad = await plugin.handle_tool_call(
