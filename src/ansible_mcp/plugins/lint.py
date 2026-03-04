@@ -61,12 +61,22 @@ class LintPlugin(AnsibleMCPPlugin):
         except ValueError as exc:
             return ToolResult(status="failed", payload={"error": str(exc)})
 
-        command = ["ansible-lint", str(resolved_path)]
+        command = [
+            "ansible-lint",
+            "--project-dir",
+            str(self.workspace.root),
+            str(resolved_path),
+        ]
         if resolved_config is not None:
             command.extend(["-c", resolved_config])
         if isinstance(tags, list) and tags:
             command.extend(["--tags", ",".join(str(tag) for tag in tags)])
 
-        result = await exec_command(command, cwd=self.workspace.root)
+        lint_env = {
+            "HOME": str(self.workspace.root),
+            "XDG_CACHE_HOME": str(self.workspace.root / ".cache"),
+            "ANSIBLE_HOME": str(self.workspace.root / ".ansible"),
+        }
+        result = await exec_command(command, cwd=self.workspace.root, env=lint_env)
         status = "success" if result["exit_code"] == 0 else "failed"
         return ToolResult(status=status, payload=result)

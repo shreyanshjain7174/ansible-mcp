@@ -102,9 +102,17 @@ class TestLintPluginExecute:
             )
         assert mock.call_args is not None
         cmd: list[str] = mock.call_args[0][0]
+        kwargs = mock.call_args.kwargs
+        assert cmd[0] == "ansible-lint"
+        assert cmd[1] == "--project-dir"
+        assert cmd[2] == str(tmp_path)
         assert "-c" in cmd
         assert "--tags" in cmd
         assert "yaml" in cmd
+        assert kwargs["cwd"] == tmp_path
+        assert kwargs["env"]["HOME"] == str(tmp_path)
+        assert kwargs["env"]["XDG_CACHE_HOME"] == str(tmp_path / ".cache")
+        assert kwargs["env"]["ANSIBLE_HOME"] == str(tmp_path / ".ansible")
 
     async def test_unsupported_tool_name(self, tmp_path: Path) -> None:
         plugin = LintPlugin(_workspace(tmp_path), _budget())
@@ -125,4 +133,7 @@ class TestLintPluginExecute:
             await plugin.handle_tool_call("lint", {})
         assert mock.call_args is not None
         cmd: list[str] = mock.call_args[0][0]
-        assert str(tmp_path.resolve()) in cmd[1]
+        assert cmd[0] == "ansible-lint"
+        assert cmd[1] == "--project-dir"
+        assert cmd[2] == str(tmp_path)
+        assert cmd[3] == str(tmp_path.resolve())
