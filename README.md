@@ -50,6 +50,13 @@ Create `.vscode/mcp.json`:
 - `zen_of_ansible` — upstream philosophy endpoint
 - `ansible_content_best_practices` — upstream guidance endpoint
 - `ansible_lint` — upstream-compatible wrapper (mapped to `lint`)
+- `ade_environment_info` — environment diagnostics endpoint
+- `ade_setup_environment` — development environment setup endpoint
+- `adt_check_env` — ADT check/install endpoint
+- `ansible_create_playbook` — playbook project scaffold endpoint
+- `ansible_create_collection` — collection project scaffold endpoint
+- `define_and_build_execution_env` — execution environment definition endpoint
+- `ansible_navigator` — navigator execution/info endpoint
 
 Detailed parity status is available at `ansible://docs/upstream-parity`.
 
@@ -77,21 +84,21 @@ These budgets are enforced through `TokenBudget` and formatting/truncation helpe
 Before adding non-upstream capabilities, this project will complete parity with
 the current upstream endpoint surface.
 
-### Phase 1 — upstream endpoint parity (in progress)
+### Phase 1 — upstream endpoint parity (completed)
 
 - `zen_of_ansible` ✅
 - `ansible_content_best_practices` ✅
 - `list_available_tools` ✅
 - `ansible_lint` ✅ (mapped to local `lint`)
-- `ade_environment_info` ⏳
-- `ade_setup_environment` ⏳
-- `adt_check_env` ⏳
-- `ansible_create_playbook` ⏳
-- `ansible_create_collection` ⏳
-- `define_and_build_execution_env` ⏳
-- `ansible_navigator` ⏳
+- `ade_environment_info` ✅
+- `ade_setup_environment` ✅
+- `adt_check_env` ✅
+- `ansible_create_playbook` ✅
+- `ansible_create_collection` ✅
+- `define_and_build_execution_env` ✅
+- `ansible_navigator` ✅
 
-Only after parity completion do we add additional standalone-only tool families.
+With parity complete, additional standalone-only tool families can be layered in without changing upstream-compatible contracts.
 
 ### Definition of done for each new plugin/tool
 
@@ -147,6 +154,14 @@ uv run --extra dev pre-commit run --all-files --hook-stage pre-push
   - `ansible://docs/lint`
   - `ansible://docs/playbook`
   - `ansible://docs/inventory`
+  - `ansible://docs/environment`
+  - `ansible://docs/project-generators`
+  - `ansible://docs/execution-environment`
+  - `ansible://docs/navigator`
+  - `schema://execution-environment`
+  - `sample://execution-environment`
+  - `rules://execution-environment`
+  - `guidelines://ansible-content-best-practices`
 
 ## Developer guidelines
 

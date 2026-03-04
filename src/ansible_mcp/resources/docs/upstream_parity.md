@@ -23,8 +23,6 @@ This document tracks parity against the current upstream Ansible MCP tool surfac
   - ansible_content_best_practices
   - list_available_tools
   - ansible_lint (mapped to `lint`)
-
-- Planned for parity completion:
   - ade_environment_info
   - ade_setup_environment
   - adt_check_env
@@ -32,6 +30,8 @@ This document tracks parity against the current upstream Ansible MCP tool surfac
   - ansible_create_collection
   - define_and_build_execution_env
   - ansible_navigator
+
+All current upstream endpoints are now available in this standalone server.
 
 ## Extensibility principle
 

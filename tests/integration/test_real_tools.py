@@ -145,6 +145,25 @@ async def test_playbook_plugin_real_calls(
     _assert_status(dry_run.status, "success", "dry-run playbook")
 
 
+async def test_playbook_plugin_real_calls_hostile_env(
+    require_real_ansible_tools: None,
+    fixture_workspace: Path,
+    token_budget: TokenBudget,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HOME", "/var/empty")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/var/empty")
+    monkeypatch.setenv("ANSIBLE_HOME", "/var/empty")
+
+    plugin = PlaybookPlugin(detect_workspace(fixture_workspace), token_budget)
+
+    syntax_ok = await plugin.handle_tool_call(
+        "playbook_syntax_check",
+        {"playbook_path": _fixture_path("sample_playbook")},
+    )
+    _assert_status(syntax_ok.status, "success", "syntax-check good playbook hostile env")
+
+
 async def test_inventory_plugin_real_calls(
     require_real_ansible_tools: None,
     fixture_workspace: Path,
@@ -163,3 +182,22 @@ async def test_inventory_plugin_real_calls(
         {"inventory_path": _fixture_path("inventory")},
     )
     _assert_status(graphed.status, "success", "inventory graph")
+
+
+async def test_inventory_plugin_real_calls_hostile_env(
+    require_real_ansible_tools: None,
+    fixture_workspace: Path,
+    token_budget: TokenBudget,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HOME", "/var/empty")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/var/empty")
+    monkeypatch.setenv("ANSIBLE_HOME", "/var/empty")
+
+    plugin = InventoryPlugin(detect_workspace(fixture_workspace), token_budget)
+
+    parsed = await plugin.handle_tool_call(
+        "inventory_parse",
+        {"inventory_path": _fixture_path("inventory")},
+    )
+    _assert_status(parsed.status, "success", "inventory parse hostile env")

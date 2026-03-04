@@ -6,6 +6,7 @@ from ansible_mcp.plugins import (
     AnsibleMCPPlugin,
     ToolResult,
     ToolSpec,
+    build_workspace_exec_env,
     exec_command,
     require_non_empty,
     resolve_workspace_path,
@@ -66,13 +67,15 @@ class PlaybookPlugin(AnsibleMCPPlugin):
         ]
 
     async def handle_tool_call(self, name: str, args: dict[str, Any]) -> ToolResult:
+        run_env = build_workspace_exec_env(self.workspace.root)
+
         if name == "playbook_syntax_check":
             try:
                 command = self._build_base_command(args)
             except ValueError as exc:
                 return ToolResult(status="failed", payload={"error": str(exc)})
             command.append("--syntax-check")
-            result = await exec_command(command, cwd=self.workspace.root)
+            result = await exec_command(command, cwd=self.workspace.root, env=run_env)
             return ToolResult(status=result["status"], payload=result)
 
         if name == "playbook_run":
@@ -85,7 +88,7 @@ class PlaybookPlugin(AnsibleMCPPlugin):
             limit = args.get("limit")
             if isinstance(limit, str) and limit.strip():
                 command.extend(["--limit", limit])
-            result = await exec_command(command, cwd=self.workspace.root)
+            result = await exec_command(command, cwd=self.workspace.root, env=run_env)
             return ToolResult(status=result["status"], payload=result)
 
         return ToolResult(status="failed", payload={"error": f"Unsupported tool: {name}"})
