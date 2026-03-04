@@ -97,6 +97,25 @@ async def test_lint_plugin_real_calls(
     _assert_status(bad.status, "failed", "lint bad playbook")
 
 
+async def test_lint_plugin_real_calls_hostile_env(
+    require_real_ansible_tools: None,
+    fixture_workspace: Path,
+    token_budget: TokenBudget,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HOME", "/var/empty")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/var/empty")
+    monkeypatch.setenv("ANSIBLE_HOME", "/var/empty")
+
+    plugin = LintPlugin(detect_workspace(fixture_workspace), token_budget)
+
+    good = await plugin.handle_tool_call(
+        "lint", {"path": _fixture_path("sample_playbook")}
+    )
+    _assert_status(good.status, "success", "lint good playbook hostile env")
+    assert "PermissionError" not in good.payload.get("stderr", "")
+
+
 async def test_playbook_plugin_real_calls(
     require_real_ansible_tools: None,
     fixture_workspace: Path,

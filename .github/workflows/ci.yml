@@ -85,5 +85,12 @@ jobs:
       - name: Install dependencies
         run: pip install -e ".[dev]"
 
+      - name: Run hostile-env lint regression
+        env:
+          HOME: /var/empty
+          XDG_CACHE_HOME: /var/empty
+          ANSIBLE_HOME: /var/empty
+        run: pytest tests/integration/test_real_tools.py::test_lint_plugin_real_calls_hostile_env -v --tb=short -m integration
+
       - name: Run integration tests
         run: pytest tests/integration -v --tb=short -m integration
