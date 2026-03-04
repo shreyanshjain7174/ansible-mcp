@@ -37,7 +37,11 @@ inventory = "ansible_mcp.plugins.inventory:InventoryPlugin"
 package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-ansible_mcp = ["resources/docs/*.md"]
+ansible_mcp = [
+  "resources/docs/*.md",
+  "resources/docs/*.json",
+  "resources/docs/*.yml",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

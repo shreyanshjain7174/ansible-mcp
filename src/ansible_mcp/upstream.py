@@ -97,15 +97,18 @@ def upstream_tool_names() -> list[str]:
     return [tool.name for tool in UPSTREAM_TOOLS]
 
 
-def upstream_tool_catalog(available_router_tools: set[str]) -> list[dict[str, str | bool | None]]:
-    always_available = {
+def upstream_tool_catalog(
+    available_router_tools: set[str],
+    available_server_tools: set[str] | None = None,
+) -> list[dict[str, str | bool | None]]:
+    server_tools = available_server_tools or {
         "zen_of_ansible",
         "ansible_content_best_practices",
         "list_available_tools",
     }
     catalog: list[dict[str, str | bool | None]] = []
     for tool in UPSTREAM_TOOLS:
-        available = tool.name in always_available
+        available = tool.name in server_tools
         if tool.mapped_to is not None:
             available = tool.mapped_to in available_router_tools
 
