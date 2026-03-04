@@ -14,6 +14,10 @@ from ansible_mcp.plugins.lint import LintPlugin
 from ansible_mcp.plugins.playbook import PlaybookPlugin
 from ansible_mcp.router import PluginRouter
 from ansible_mcp.token_budget import TokenBudget
+from ansible_mcp.upstream import (
+    UPSTREAM_ZEN_OF_ANSIBLE,
+    upstream_tool_catalog,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +83,55 @@ def create_server(
         """List ansible-mcp tool metadata with compact descriptions."""
 
         return router.list_tool_dicts()
+
+    @mcp.tool()
+    def list_available_tools() -> list[dict[str, str | bool | None]]:
+        """List upstream-compatible tools and whether each is currently available."""
+
+        available_router_tools = {spec.name for spec in router.list_tool_specs()}
+        return upstream_tool_catalog(available_router_tools)
+
+    @mcp.tool()
+    def zen_of_ansible() -> str:
+        """Return the Zen of Ansible aphorisms."""
+
+        return UPSTREAM_ZEN_OF_ANSIBLE
+
+    @mcp.tool()
+    def ansible_content_best_practices(topic: str | None = None) -> str:
+        """Return best-practices guidance for Ansible content."""
+
+        full_text = _read_doc("best_practices.md")
+        if topic is None or not topic.strip():
+            return full_text
+
+        normalized_topic = topic.strip().lower()
+        sections = [section.strip() for section in full_text.split("\n## ")]
+        for section in sections:
+            if section.lower().startswith(normalized_topic):
+                if section.startswith("#"):
+                    return section
+                return f"## {section}"
+        return full_text
+
+    @mcp.tool()
+    async def ansible_lint(filePath: str, fix: bool | None = None) -> dict[str, Any]:
+        """Upstream-compatible wrapper around lint."""
+
+        result = await router.execute(
+            "lint",
+            {
+                "path": filePath,
+            },
+        )
+        if fix is True:
+            raw = result.get("raw", {})
+            if isinstance(raw, dict):
+                raw["notice"] = (
+                    "'fix=true' requested, but standalone ansible-mcp currently runs "
+                    "read-only lint mode. Auto-fix parity is planned."
+                )
+        return result
 
     @mcp.tool()
     async def lint(
@@ -160,6 +213,12 @@ def create_server(
         """Detailed docs for inventory tools."""
 
         return _read_doc("inventory.md")
+
+    @mcp.resource("ansible://docs/upstream-parity")
+    def upstream_parity_docs() -> str:
+        """Current upstream tool parity status."""
+
+        return _read_doc("upstream_parity.md")
 
     return mcp
 

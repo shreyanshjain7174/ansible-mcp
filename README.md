@@ -44,6 +44,15 @@ Create `.vscode/mcp.json`:
 - `inventory_parse` — run `ansible-inventory --list`
 - `inventory_graph` — run `ansible-inventory --graph`
 
+## Upstream-compatible tools (parity track)
+
+- `list_available_tools` — list upstream endpoints and current availability
+- `zen_of_ansible` — upstream philosophy endpoint
+- `ansible_content_best_practices` — upstream guidance endpoint
+- `ansible_lint` — upstream-compatible wrapper (mapped to `lint`)
+
+Detailed parity status is available at `ansible://docs/upstream-parity`.
+
 ## Upstream vs standalone (this project)
 
 | Area | VS Code Ansible MCP (upstream model) | `ansible-mcp` (this repo) |
@@ -63,24 +72,26 @@ Create `.vscode/mcp.json`:
 
 These budgets are enforced through `TokenBudget` and formatting/truncation helpers in the server runtime.
 
-## Roadmap: add remaining tool families
+## Roadmap: upstream parity first
 
-Current server scope is MVP. The remaining planned tool families are below.
+Before adding non-upstream capabilities, this project will complete parity with
+the current upstream endpoint surface.
 
-### Phase 1 — CLI-first plugins (next)
+### Phase 1 — upstream endpoint parity (in progress)
 
-- **Galaxy**: search/install/info/init collection or role scaffolding
-- **Molecule**: init/test/converge/destroy
-- **Vault**: encrypt/decrypt/view/rekey with strict path and secret handling
+- `zen_of_ansible` ✅
+- `ansible_content_best_practices` ✅
+- `list_available_tools` ✅
+- `ansible_lint` ✅ (mapped to local `lint`)
+- `ade_environment_info` ⏳
+- `ade_setup_environment` ⏳
+- `adt_check_env` ⏳
+- `ansible_create_playbook` ⏳
+- `ansible_create_collection` ⏳
+- `define_and_build_execution_env` ⏳
+- `ansible_navigator` ⏳
 
-### Phase 2 — Controller/API plugins
-
-- **AAP (Automation Controller)**: list templates, launch jobs, monitor job status, inventory operations
-
-### Phase 3 — Advanced execution tooling
-
-- **Execution Environments**: build/inspect flows (for ansible-builder based workflows)
-- **Navigator**: run/inventory/artifact-oriented tool surface
+Only after parity completion do we add additional standalone-only tool families.
 
 ### Definition of done for each new plugin/tool
 
