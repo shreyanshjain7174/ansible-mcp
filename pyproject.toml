@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ansible-mcp"
+version = "0.1.0"
+description = "Standalone, vendor-agnostic MCP server for Ansible tooling"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "ansible-mcp maintainers" }]
+license = { text = "MIT" }
+dependencies = [
+  "mcp[cli]>=1.2.0",
+  "ansible-core>=2.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+  "pytest-asyncio>=0.23.0",
+  "ruff>=0.6.0",
+  "mypy>=1.11.0",
+]
+
+[project.scripts]
+ansible-mcp = "ansible_mcp.__main__:main"
+
+[project.entry-points."ansible_mcp.plugins"]
+lint = "ansible_mcp.plugins.lint:LintPlugin"
+playbook = "ansible_mcp.plugins.playbook:PlaybookPlugin"
+inventory = "ansible_mcp.plugins.inventory:InventoryPlugin"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+ansible_mcp = ["resources/docs/*.md"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
