@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from pathlib import Path
 
+import pytest
 from mcp.server.fastmcp import FastMCP
 
 from ansible_mcp.context import detect_workspace
 from ansible_mcp.router import PluginRouter
-from ansible_mcp.server import build_router, create_server
+from ansible_mcp.server import _BlankLineFilteringStdin, build_router, create_server
 from ansible_mcp.token_budget import TokenBudget
 
 # ---------------------------------------------------------------------------
@@ -47,3 +49,27 @@ class TestBuildRouter:
         assert "inventory_graph" in names
         assert "playbook_syntax_check" in names
         assert "playbook_run" in names
+
+
+async def _line_stream(lines: list[str]) -> AsyncIterator[str]:
+    for line in lines:
+        yield line
+
+
+class TestBlankLineFilteringStdin:
+    @pytest.mark.asyncio
+    async def test_skips_blank_and_whitespace_only_lines(self) -> None:
+        filtered = _BlankLineFilteringStdin(
+            _line_stream(["\n", "   \n", '{"jsonrpc":"2.0"}\n'])
+        )
+
+        first = await anext(filtered)
+
+        assert first == '{"jsonrpc":"2.0"}\n'
+
+    @pytest.mark.asyncio
+    async def test_exhausts_when_only_blank_lines_are_provided(self) -> None:
+        filtered = _BlankLineFilteringStdin(_line_stream(["\n", "\t \n"]))
+
+        with pytest.raises(StopAsyncIteration):
+            await anext(filtered)

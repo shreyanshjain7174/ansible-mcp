@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 
+from ansible_mcp.installer import install_client_config
 from ansible_mcp.server import run_server
 
 
@@ -41,6 +42,33 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable stateless HTTP mode (used only with --http)",
     )
 
+    install_parser = subparsers.add_parser(
+        "install", help="Configure ansible-mcp for a supported MCP client"
+    )
+    install_parser.add_argument(
+        "--client",
+        choices=["copilot", "claude", "cursor"],
+        required=True,
+        help="Target MCP client",
+    )
+    install_parser.add_argument(
+        "--scope",
+        choices=["user", "project"],
+        default="user",
+        help="Where to install config (default: user)",
+    )
+    install_parser.add_argument(
+        "--workspace-root",
+        type=str,
+        help="Workspace root path (required for project scope)",
+    )
+    install_parser.add_argument(
+        "--name",
+        type=str,
+        default="ansible-mcp",
+        help="Server name key in client config",
+    )
+
     return parser
 
 
@@ -64,6 +92,25 @@ def main() -> int:
             port=args.port,
             stateless_http=stateless_http,
         )
+        return 0
+
+    if args.command == "install":
+        install_workspace_root: Path | None = None
+        if args.scope == "project":
+            install_workspace_root = _workspace_from_env_or_default(args.workspace_root)
+
+        result = install_client_config(
+            client=args.client,
+            scope=args.scope,
+            server_name=args.name,
+            workspace_root=install_workspace_root,
+        )
+        print(
+            f"Configured '{result.server_name}' for {result.client} "
+            f"({result.scope}) at {result.config_path}"
+        )
+        if result.client == "copilot":
+            print("Next step: reload VS Code (Developer: Reload Window)")
         return 0
 
     parser.print_help()
