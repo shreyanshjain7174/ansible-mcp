@@ -1,7 +1,13 @@
 # ansible-mcp
 
-Standalone MCP server for Ansible workflows with first-class support for modern
-MCP clients (GitHub Copilot, Claude Code, Cursor).
+Standalone, vendor-agnostic MCP server for Ansible workflows with first-class
+support for modern MCP clients (GitHub Copilot, Claude Code, Cursor).
+
+## Requirements
+
+- Python 3.12+
+- `ansible-core` 2.20+ (installed automatically as a package dependency)
+- `uv` recommended for install and execution
 
 ## One-click setup
 
@@ -38,6 +44,32 @@ ansible-mcp install --client copilot --scope project --workspace-root .
 ansible-mcp install --client cursor --scope project --workspace-root .
 ```
 
+Use a custom server key in client config if needed:
+
+```bash
+ansible-mcp install --client copilot --name ansible-mcp-prod
+```
+
+## Running the server manually
+
+Default transport (STDIO):
+
+```bash
+ansible-mcp serve --stdio
+```
+
+Streamable HTTP transport:
+
+```bash
+ansible-mcp serve --http --host 127.0.0.1 --port 8000
+```
+
+SSE transport:
+
+```bash
+ansible-mcp serve --sse --host 127.0.0.1 --port 8000
+```
+
 ## Why `ansible-mcp serve --stdio` keeps the terminal open
 
 `--stdio` runs a long-lived MCP server process. It waits for JSON-RPC messages
@@ -72,6 +104,13 @@ from your MCP client.
 - `ansible_navigator`
 
 Detailed parity notes: `ansible://docs/upstream-parity`
+
+## Typical local development loop
+
+```bash
+uv run pytest tests/unit -q --tb=short
+uv run pytest tests/integration -q --tb=short -m integration
+```
 
 ## Upstream comparison
 
