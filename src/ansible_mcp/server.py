@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import logging
+import sys
+from collections.abc import AsyncIterable
 from importlib.metadata import entry_points
+from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
+import anyio
 from mcp.server.fastmcp import FastMCP
+from mcp.server.stdio import stdio_server
 
 from ansible_mcp.context import WorkspaceContext, detect_workspace
 from ansible_mcp.plugins import AnsibleMCPPlugin
@@ -30,6 +35,20 @@ from ansible_mcp.upstream_tools import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class _BlankLineFilteringStdin:
+    def __init__(self, stream: AsyncIterable[str]) -> None:
+        self._stream = stream
+
+    def __aiter__(self) -> _BlankLineFilteringStdin:
+        return self
+
+    async def __anext__(self) -> str:
+        async for line in self._stream:
+            if line.strip():
+                return line
+        raise StopAsyncIteration
 
 
 def _builtin_plugins() -> list[type[AnsibleMCPPlugin]]:
@@ -401,7 +420,7 @@ def run_server(
     mcp.settings.port = port
 
     if transport == "stdio":
-        mcp.run()
+        anyio.run(_run_stdio_server_async, mcp)
         return
     if transport == "streamable-http":
         mcp.settings.stateless_http = stateless_http
@@ -411,3 +430,14 @@ def run_server(
         mcp.run(transport="sse")
         return
     raise ValueError(f"Unsupported transport: {transport}")
+
+
+async def _run_stdio_server_async(mcp: FastMCP) -> None:
+    stdin = anyio.wrap_file(TextIOWrapper(sys.stdin.buffer, encoding="utf-8"))
+    filtered_stdin = _BlankLineFilteringStdin(cast(AsyncIterable[str], stdin))
+    async with stdio_server(stdin=cast(Any, filtered_stdin)) as (read_stream, write_stream):
+        await mcp._mcp_server.run(  # pyright: ignore[reportPrivateUsage]
+            read_stream,
+            write_stream,
+            mcp._mcp_server.create_initialization_options(),  # pyright: ignore[reportPrivateUsage]
+        )
