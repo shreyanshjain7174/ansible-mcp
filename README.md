@@ -1,4 +1,4 @@
-# ansible-devtools-mcp
+# ansible-mcp
 
 Standalone, vendor-agnostic MCP server for Ansible workflows with first-class
 support for modern MCP clients (GitHub Copilot, Claude Code, Cursor).
